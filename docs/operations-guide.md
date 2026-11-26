@@ -66,6 +66,18 @@ npm run worker -w @shree/operations -- --watch
 
 Use a long-running Node host and a separately supervised worker for deployment. Operations cannot be hosted as the marketing static export. Configure environment secrets on that host, TLS, exact APP_URL, Supabase callback allowlist, database connection limits and restricted server runtime role. Do not serve `.env.local` or database backups. Use `npm run db:migrate -w @shree/operations` only after inspecting the intended target and reviewing migrations.
 
+### Render
+
+The repository-root `render.yaml` defines a Node web service and a background worker in Singapore. Connect the repository in the Render Dashboard and use the Blueprint with four environment values supplied privately for the web service.
+
+- `DATABASE_URL` uses the existing PostgreSQL runtime connection. The worker inherits the same value.
+- `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` identify the Supabase Auth project.
+- `SUPABASE_SECRET_KEY` allows the server to provision staff accounts for admin approval.
+
+The web service uses its Render HTTPS origin for `APP_URL` by default. Set `APP_URL` to the exact HTTPS origin if you use a custom domain, then add that origin's `/auth/callback` URL to Supabase Auth. Check `npm run db:status -w @shree/operations` against the intended database before launch. The Blueprint builds the application and generates its Prisma client. Apply any approved database migrations separately.
+
+After deploying, verify staff sign-in and confirm the worker can process an invoice PDF and a queued export. Check both services' logs before switching staff to the hosted CRM.
+
 ## Verification commands
 
 ```powershell

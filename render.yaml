@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: shree-sudhya-operations
+    runtime: node
+    region: singapore
+    plan: 0.5c-512mb
+    branch: main
+    buildCommand: npm ci --include=dev && npm run build:operations
+    startCommand: >-
+      APP_URL="${APP_URL:-$RENDER_EXTERNAL_URL}"
+      npm exec --workspace @shree/operations -- next start --hostname 0.0.0.0 --port "$PORT"
+    healthCheckPath: /login
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+
+  - type: worker
+    name: shree-sudhya-operations-worker
+    runtime: node
+    region: singapore
+    plan: 0.5c-512mb
+    branch: main
+    buildCommand: npm ci --include=dev && npm run db:generate
+    startCommand: npm run worker -w @shree/operations -- --watch
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL
+        fromService:
+          type: web
+          name: shree-sudhya-operations
+          envVarKey: DATABASE_URL
