@@ -1,0 +1,48 @@
+{
+  "name": "@shree/operations",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --webpack --port 3002",
+    "dev:test-accounts": "node scripts/dev-test-accounts.mjs",
+    "build": "prisma generate && next build --webpack",
+    "start": "next start --port 3002",
+    "lint": "eslint src scripts tests prisma.config.ts next.config.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "db:generate": "prisma generate",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:bootstrap": "tsx scripts/bootstrap-admin.ts",
+    "test:integration": "tsx scripts/integration.ts",
+    "test:browser": "playwright test",
+    "db:provision": "tsx scripts/provision-user.ts",
+    "worker": "node --conditions=react-server --import tsx scripts/worker.ts",
+    "db:status": "tsx scripts/migrate.ts --status",
+    "setup:admin": "tsx scripts/setup-admin.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "6.19.3",
+    "@shree/domain": "0.1.0",
+    "@supabase/ssr": "0.7.0",
+    "@supabase/supabase-js": "2.57.4",
+    "lucide-react": "^1.58.0",
+    "next": "^16.4.5",
+    "pdfkit": "^0.17.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "server-only": "0.0.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.58.2",
+    "@types/node": "26.6.5",
+    "@types/pdfkit": "^0.17.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "prisma": "6.19.3",
+    "tsx": "4.20.6",
+    "typescript": "^6.0.3",
+    "vitest": "4.1.12"
+  },
+  "type": "module"
+}

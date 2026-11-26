@@ -1,9 +1,14 @@
 node_modules/
+**/node_modules/
 .next/
+**/.next/
 out/
+**/out/
 *.tsbuildinfo
 .env*
+!.env.example
+!**/.env.example
 test-results/
-
 .local-design-history/
 .local-checks/
+**/generated/

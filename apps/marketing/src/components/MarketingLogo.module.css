@@ -1,0 +1,71 @@
+.logo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 0 1 auto;
+  min-width: 0;
+  min-height: 44px;
+  line-height: 0;
+}
+
+.compact {
+  gap: clamp(4px, 0.65vw, 10px);
+  width: clamp(200px, 20vw, 266px);
+}
+
+.compact span {
+  position: relative;
+  display: block;
+  overflow: hidden;
+}
+
+/* Show the two parts of the supplied artwork side by side within the existing navbar. */
+.emblem {
+  flex: 0 0 31%;
+  aspect-ratio: 820 / 612;
+}
+
+.wordmark {
+  flex: 1 1 auto;
+  aspect-ratio: 1275 / 318;
+  /* Keep the gold leaf while excluding the emblem's lower shadow. */
+  clip-path: polygon(0 8%, 87% 8%, 87% 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.compact img {
+  position: absolute;
+  display: block;
+  height: auto;
+  max-width: none;
+}
+
+.emblem img {
+  width: 187.317%;
+  left: -42.683%;
+  top: -9.314%;
+}
+
+.wordmark img {
+  width: 120.471%;
+  left: -10.196%;
+  top: -202.516%;
+}
+
+.full {
+  width: clamp(190px, 24vw, 290px);
+  max-width: 100%;
+  justify-self: start;
+  mix-blend-mode: multiply;
+}
+
+.full img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 680px) {
+  .compact {
+    width: min(240px, 74vw);
+  }
+}

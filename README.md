@@ -1,43 +1,17 @@
 # Shree Sudhya Laundry Services
 
-A Next.js informational website using the original pearl, navy, aqua and gold brand. Includes a continuous optional 3D laundry cycle, wash-synchronised bubbles, the original About towel artwork, service cards, keyboard-operable process tabs, a photography gallery/lightbox and owner-configurable contact information. No booking, authentication, payment or dashboard features are implied.
+Npm workspace containing the public marketing site and a separate private operations application. Includes secure identity/access, masters, pickup-to-delivery operations, source-based finance, reconciled reports and durable workers. See the verification and production limitations below.
 
-## Run locally
+| Workspace | Purpose | Development | Build |
+| --- | --- | --- | --- |
+| apps/marketing | Existing public site, original artwork/contact/gallery/3D | npm run dev:marketing (3001) | npm run build:marketing → apps/marketing/out |
+| apps/operations | Server-enabled internal workspace | npm run dev:operations (3002) | npm run build:operations |
+| packages/domain | Framework-independent access, validation and exact money helpers | — | consumed as TypeScript |
 
-Node.js 20.19+ is supported; Node 22 is used in CI.
+Run npm ci from root. Node 20.19+; CI uses Node 22. Run npm run db:generate after installing, then npm run check for lint, both builds, typechecks and applicable tests. npm run test:integration requires an isolated PostgreSQL database; it deliberately fails rather than pretending to verify locking without one. npm run test:browser -w @shree/operations runs the delivered Playwright journeys in an authorised environment.
 
-```sh
-npm ci
-npm run dev
-```
+See [implementation status](docs/implementation-status.md), [local setup](docs/local-setup.md), [security model](docs/security-model.md), [business decisions](docs/business-rules.md) and [release checklist](docs/release-checklist.md). Prior marketing instructions are preserved in [marketing readme](docs/marketing-readme.md).
 
-Open http://localhost:3001.
+Supabase Auth verifies identity; PostgreSQL/Prisma stores application roles, scopes and masters. Missing configuration denies access. There is no fake login, production seed password, client-side database or invented live KPI. Hosted integrations and real PostgreSQL tests require explicit local configuration. Production deployments/migrations are not run by setup or test scripts.
 
-## Validate and build
-
-```sh
-npm run lint
-npm run build
-npm run typecheck
-npm test
-```
-
-On memory-constrained machines, stop the dev server before building. The project caps build workers at two.
-
-Or run `npm run check` for the full ordered sequence. Run TypeScript after the build, because Next regenerates its type files. `npm test` includes deterministic garment/bubble tests, numerical viewport-budget tests and checks of the built export. These do not substitute for browser/device testing.
-
-The production static site is exported to `out/`. `npm run preview` serves it on port 3001; stop the dev server first. Publish `out/` to a static host. GitHub code publication and website deployment are separate; no hosting credentials or domain are embedded.
-
-## Responsive layout
-
-The sticky header is measured with ResizeObserver. Hero and gallery media use the remaining viewport height after their actual text and controls are measured. Short screens, mobile and enlarged text use normal document scrolling rather than clipping or hiding information. Reduced-motion and unavailable WebGL use a static fallback. Native section anchors, keyboard focus, mobile focus trapping and the dialog's Escape/arrow navigation are retained.
-
-## Dependency compatibility
-
-Three.js is pinned to 0.182.0 with matching types while Fiber 9.8.2 still constructs Clock internally. This is within Fiber/Drei's peer ranges and avoids the r183+ Clock deprecation without console filtering or monkey-patching. Revisit this pin when Fiber supports Timer. The lockfile is authoritative; use `npm ci`.
-
-## Before public launch
-
-Populate verified phone, WhatsApp, email, address, hours, service locations, maps URL and production domain in `src/config/company.ts`. Confirm the proposed service collection and process. The supplied gallery images are reference photographs. No contact details, prices, customer reviews or business statistics were fabricated.
-
-See [AUDIT-AND-VALIDATION.md](AUDIT-AND-VALIDATION.md) for findings, changes and honest validation limits; [BRAND-AND-IMPLEMENTATION.md](BRAND-AND-IMPLEMENTATION.md) for design/architecture; and [ASSET-SOURCES.md](ASSET-SOURCES.md) for provenance.
+The existing uncommitted marketing contact improvements and unrelated output/ folder are preserved. No production data or secrets are included. The implemented core workflows and remaining limitations are described in [phase inventory](docs/phase-2-4-status.md). Start with the [operations run guide](docs/operations-guide.md).

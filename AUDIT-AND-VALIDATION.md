@@ -1,3 +1,5 @@
+> Workspace update: public website source/assets/scripts now live under `apps/marketing/`. Relative source paths below refer to that workspace. For the new internal application, see `docs/implementation-status.md`.
+
 # Production audit and delivery
 
 ## Initial findings (before implementation)

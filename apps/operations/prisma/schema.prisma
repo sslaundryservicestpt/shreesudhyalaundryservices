@@ -1,0 +1,387 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+enum Role {
+  ADMIN
+  SUPERVISOR
+  DELIVERY_EXECUTIVE
+  BRANCH_USER
+}
+enum QuantityUnit {
+  PIECE
+  KG
+}
+enum ServiceRoute {
+  WASH_DRY_FOLD
+  WASH_DRY_IRON
+  IRON_ONLY
+}
+model UserProfile {
+  id String @id @default(uuid()) @db.Uuid
+  authUserId String @unique @db.Uuid
+  email String
+  displayName String
+  active Boolean @default(true)
+  version Int @default(1)
+  crmLeads CrmLead[]
+  pickups PickupRequest[]
+  pickupNotifications PickupNotification[]
+  memberships RoleMembership[]
+  scopes UserScope[]
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+}
+model RoleMembership {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  role Role
+  user UserProfile @relation(fields:[userId], references:[id], onDelete:Restrict)
+  @@unique([userId,role])
+}
+model UserScope {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  clientId String? @db.Uuid
+  branchId String? @db.Uuid
+  unitId String? @db.Uuid
+  user UserProfile @relation(fields:[userId], references:[id], onDelete:Restrict)
+  client Client? @relation(fields:[clientId], references:[id], onDelete:Restrict)
+  branch Branch? @relation(fields:[branchId], references:[id], onDelete:Restrict)
+  unit LaundryUnit? @relation(fields:[unitId], references:[id], onDelete:Restrict)
+  @@index([userId])
+}
+model Client {
+  id String @id @default(uuid()) @db.Uuid
+  name String
+  contactName String @default("")
+  phone String @default("")
+  email String @default("")
+  archived Boolean @default(false)
+  version Int @default(1)
+  branches Branch[]
+  scopes UserScope[]
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  @@index([archived,name])
+}
+model Branch {
+  id String @id @default(uuid()) @db.Uuid
+  name String
+  clientId String @db.Uuid
+  unitId String? @db.Uuid
+  contactName String @default("")
+  phone String @default("")
+  email String @default("")
+  address String @default("")
+  archived Boolean @default(false)
+  version Int @default(1)
+  crmLeads CrmLead[]
+  client Client @relation(fields:[clientId], references:[id], onDelete:Restrict)
+  laundryUnit LaundryUnit? @relation(fields:[unitId], references:[id], onDelete:Restrict)
+  scopes UserScope[]
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  @@index([clientId,archived,name])
+  @@index([unitId])
+}
+model LaundryUnit {
+  id String @id @default(uuid()) @db.Uuid
+  name String
+  address String @default("")
+  archived Boolean @default(false)
+  version Int @default(1)
+  branches Branch[]
+  scopes UserScope[]
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  @@index([archived,name])
+}
+model GarmentType {
+  id String @id @default(uuid()) @db.Uuid
+  name String
+  unit QuantityUnit @default(PIECE)
+  archived Boolean @default(false)
+  version Int @default(1)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  @@index([archived,name])
+}
+model ServiceCatalog {
+  id String @id @default(uuid()) @db.Uuid
+  name String
+  route ServiceRoute @default(WASH_DRY_FOLD)
+  archived Boolean @default(false)
+  version Int @default(1)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  @@index([archived,name])
+}
+model AuditLog {
+  id String @id @default(uuid()) @db.Uuid
+  actorId String @db.Uuid
+  action String
+  resourceType String
+  resourceId String @db.Uuid
+  requestId String
+  before Json?
+  after Json?
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  @@index([resourceType,resourceId,createdAt])
+  @@index([actorId,createdAt])
+}
+model OutboxEvent {
+  id String @id @default(uuid()) @db.Uuid
+  topic String
+  payload Json
+  attempts Int @default(0)
+  availableAt DateTime @default(now()) @db.Timestamptz(3)
+  processedAt DateTime? @db.Timestamptz(3)
+  lockedUntil DateTime? @db.Timestamptz(3)
+  leaseToken String?
+  lastError String?
+  failedAt DateTime? @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  @@index([processedAt,availableAt])
+}
+
+model WorkOrder {
+  id String @id @default(uuid()) @db.Uuid
+  number BigInt @unique @default(autoincrement())
+  branchId String @db.Uuid
+  clientId String @db.Uuid
+  unitId String @db.Uuid
+  executiveId String @db.Uuid
+  scheduledAt DateTime @db.Timestamptz(3)
+  queue String @default("PICKUP")
+  version Int @default(1)
+  state Json
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  movements QuantityMovement[]
+  files FileAsset[]
+  billing BillingAllocation?
+  @@index([branchId,queue,createdAt])
+  @@index([executiveId,scheduledAt])
+}
+model QuantityMovement {
+  id String @id @default(uuid()) @db.Uuid
+  orderId String @db.Uuid
+  order WorkOrder @relation(fields:[orderId],references:[id],onDelete:Restrict)
+  lineId String @db.Uuid
+  from String
+  to String
+  quantity Int
+  unit String
+  reference String @db.Uuid
+  actorId String @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  @@index([orderId,createdAt])
+}
+model FileAsset {
+  id String @id @default(uuid()) @db.Uuid
+  orderId String @db.Uuid
+  order WorkOrder @relation(fields:[orderId],references:[id],onDelete:Restrict)
+  name String
+  mime String
+  content Bytes
+  actorId String @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  @@index([orderId])
+}
+model BusinessPolicy {
+  id String @id @default("operations")
+  version Int @default(1)
+  value Json
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+}
+model RateContract {
+  id String @id @default(uuid()) @db.Uuid
+  branchId String? @db.Uuid
+  clientId String? @db.Uuid
+  clientManaged Boolean @default(false)
+  garmentId String @db.Uuid
+  serviceId String @db.Uuid
+  unit String
+  currency String
+  rate BigInt
+  startsAt DateTime @db.Timestamptz(3)
+  endsAt DateTime @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  @@index([garmentId,serviceId,startsAt])
+}
+model Invoice {
+  id String @id @default(uuid()) @db.Uuid
+  branchId String @db.Uuid
+  clientId String @db.Uuid
+  status String @default("DRAFT")
+  number String? @unique
+  currency String
+  subtotal BigInt
+  tax BigInt
+  total BigInt
+  snapshot Json
+  startsAt DateTime @db.Timestamptz(3)
+  endsAt DateTime @db.Timestamptz(3)
+  dueAt DateTime @db.Timestamptz(3)
+  issuedAt DateTime? @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  pdf Bytes?
+  allocations BillingAllocation[]
+  receipts PaymentAllocation[]
+  credits CreditNote[]
+  @@index([clientId,status,dueAt])
+}
+model BillingAllocation {
+  orderId String @id @db.Uuid
+  order WorkOrder @relation(fields:[orderId],references:[id],onDelete:Restrict)
+  invoiceId String @db.Uuid
+  invoice Invoice @relation(fields:[invoiceId],references:[id],onDelete:Restrict)
+}
+model DocumentSequence {
+  id String @id
+  next BigInt @default(1)
+}
+model Payment {
+  id String @id @default(uuid()) @db.Uuid
+  clientId String @db.Uuid
+  currency String
+  amount BigInt
+  reference String
+  receivedAt DateTime @db.Timestamptz(3)
+  reversedAt DateTime? @db.Timestamptz(3)
+  reversalReason String?
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  allocations PaymentAllocation[]
+  @@index([clientId,receivedAt])
+}
+model PaymentAllocation {
+  id String @id @default(uuid()) @db.Uuid
+  paymentId String @db.Uuid
+  payment Payment @relation(fields:[paymentId],references:[id],onDelete:Restrict)
+  invoiceId String @db.Uuid
+  invoice Invoice @relation(fields:[invoiceId],references:[id],onDelete:Restrict)
+  amount BigInt
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  @@index([invoiceId])
+}
+model CreditNote {
+  id String @id @default(uuid()) @db.Uuid
+  invoiceId String @db.Uuid
+  invoice Invoice @relation(fields:[invoiceId],references:[id],onDelete:Restrict)
+  amount BigInt
+  reason String
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+}
+model Expense {
+  id String @id @default(uuid()) @db.Uuid
+  category String
+  description String
+  amount BigInt
+  currency String
+  status String @default("SUBMITTED")
+  incurredAt DateTime @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+}
+model IdempotencyRecord {
+  id String @id @default(uuid()) @db.Uuid
+  actorId String @db.Uuid
+  key String
+  requestHash String
+  response Json
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  @@unique([actorId,key])
+}
+
+
+
+enum LeadStatus {
+  NEW
+  UNDER_REVIEW
+  CONVERTED_TO_PICKUP
+  REJECTED
+  CLOSED
+}
+
+enum LeadSource {
+  PHONE
+  WHATSAPP
+}
+
+enum PickupStatus {
+  PENDING
+  IN_QUEUE
+  GOING_FOR_PICKUP
+  REACHED_BRANCH
+  CANCELLED
+}
+
+model CrmLead {
+  id String @id @default(uuid()) @db.Uuid
+  branchId String? @db.Uuid
+  branch Branch? @relation(fields:[branchId],references:[id],onDelete:Restrict)
+  supervisorId String? @db.Uuid
+  supervisor UserProfile? @relation(fields:[supervisorId],references:[id],onDelete:Restrict)
+  contactName String @default("")
+  phone String
+  windowStart DateTime? @db.Timestamptz(3)
+  windowEnd DateTime? @db.Timestamptz(3)
+  address String @default("")
+  approximateItems String @default("")
+  instructions String @default("")
+  notes String @default("")
+  reason String @default("")
+  source LeadSource
+  status LeadStatus @default(NEW)
+  version Int @default(1)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  pickup PickupRequest?
+  messages WhatsAppInbound[]
+  @@index([branchId,status,createdAt])
+  @@index([supervisorId,status,createdAt])
+}
+
+model PickupRequest {
+  id String @id @default(uuid()) @db.Uuid
+  leadId String @unique @db.Uuid
+  lead CrmLead @relation(fields:[leadId],references:[id],onDelete:Restrict)
+  executiveId String? @db.Uuid
+  executive UserProfile? @relation(fields:[executiveId],references:[id],onDelete:Restrict)
+  windowStart DateTime @db.Timestamptz(3)
+  windowEnd DateTime @db.Timestamptz(3)
+  status PickupStatus @default(PENDING)
+  version Int @default(1)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  notifications PickupNotification[]
+  @@index([executiveId,status,windowStart])
+}
+
+model PickupNotification {
+  id String @id @default(uuid()) @db.Uuid
+  pickupId String @db.Uuid
+  pickup PickupRequest @relation(fields:[pickupId],references:[id],onDelete:Restrict)
+  recipientId String @db.Uuid
+  recipient UserProfile @relation(fields:[recipientId],references:[id],onDelete:Restrict)
+  assignmentVersion Int
+  readAt DateTime? @db.Timestamptz(3)
+  revokedAt DateTime? @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  @@unique([pickupId,assignmentVersion])
+  @@index([recipientId,revokedAt,readAt,createdAt])
+}
+
+model WhatsAppInbound {
+  id String @id @db.VarChar(255)
+  leadId String @db.Uuid
+  lead CrmLead @relation(fields:[leadId],references:[id],onDelete:Restrict)
+  payload Bytes?
+  expiresAt DateTime @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  @@index([leadId])
+  @@index([expiresAt])
+}

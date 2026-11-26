@@ -1,0 +1,48 @@
+{
+  "schemaSha256": "770202ca29ce746bd5b34ae4262ae8d71218ced3b3b8ceeb967945d802863a1c",
+  "migrations": {
+    "202611160001_phase1": "e8e2c7b56c27ad1d8ac913c4f156769633efa5f4c2aff8686fc00ab73de20b11",
+    "202611170001_server_table_security": "ab12b94b5aac10a78a0084501c418cbe6ae41f810861115ce32be3fe44c476d5",
+    "202611170002_operations_finance": "9c48f961844169ee073afdc4b5e8522a19a52101a560397f9b6d7a80ac034ee2",
+    "202611170003_history_guards": "c14d95982a9959a1465412060537f4c8292ba48a2cd84f9b244078b4426f39a3",
+    "202611210001_crm_intake": "d5e48c6aeb2d459424d1038c5ee85734e4da50a4768750f5a33274577403f4b5",
+    "202611250001_branch_rate_cutover": "0f86165229306ba0487d9815964e0407ec2e12ae01ac45dc82f20848c913a031",
+    "202611250002_client_item_rates": "f23c1e7597336e60b5cee6e1e8d152c61b7952357bf83fab0fc26f2f88c5f835"
+  },
+  "requiredConstraints": [
+    "scope_exactly_one_target",
+    "work_branch_fk",
+    "work_client_fk",
+    "work_unit_fk",
+    "work_executive_fk",
+    "quantity_unit_valid",
+    "quantity_buckets_valid",
+    "invoice_state_valid",
+    "reversal_reason_required",
+    "expense_state_valid",
+    "crm_lead_valid_window",
+    "pickup_valid_window",
+    "pickup_valid_assignment",
+    "rate_client_managed_scope"
+  ],
+  "requiredIndexes": [
+    "UserProfile_authUserId_key",
+    "RoleMembership_userId_role_key",
+    "IdempotencyRecord_actorId_key_key",
+    "WorkOrder_number_key",
+    "WorkOrder_branchId_queue_createdAt_idx",
+    "WorkOrder_executiveId_scheduledAt_idx",
+    "Invoice_clientId_status_dueAt_idx",
+    "PaymentAllocation_invoiceId_idx"
+  ],
+  "requiredTriggers": [
+    "audit_immutable",
+    "quantity_immutable",
+    "rate_immutable",
+    "credit_immutable",
+    "allocation_immutable",
+    "invoice_immutable",
+    "receipt_immutable",
+    "issued_sources_immutable"
+  ]
+}

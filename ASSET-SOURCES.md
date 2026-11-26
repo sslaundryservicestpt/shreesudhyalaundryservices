@@ -1,3 +1,5 @@
+> Workspace update: public website source/assets/scripts now live under `apps/marketing/`. Relative source paths below refer to that workspace. For the new internal application, see `docs/implementation-status.md`.
+
 # Asset sources
 
 - `public/images/brand-banner.jpeg`: original Shree Sudhya banner supplied by the owner. Navbar/footer use the original artwork.
@@ -8,3 +10,6 @@
 - `lucide-react`: installed icon library, ISC licence; see its package metadata.
 
 Historical sources and rejected preview images are preserved locally in the ignored `.local-design-history/` folder instead of being shipped as unused website assets. The current shipping WebP photographs preserve all original decoded pixels.
+
+
+Operations invoice font: static Lato Regular from https://github.com/google/fonts/tree/main/ofl/lato. Local font and OFL license are in apps/operations/public/fonts. The existing DM Sans website font remains unchanged.

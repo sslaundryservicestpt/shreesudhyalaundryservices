@@ -1,28 +1,26 @@
 {
   "name": "shreesudhyalaundryservices",
   "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "next dev --webpack --hostname 0.0.0.0 --port 3001",
-    "build": "next build --webpack",
-    "typecheck": "tsc --noEmit",
-    "lint": "eslint .",
-    "preview": "node scripts/preview.mjs",
-    "test": "node scripts/verify-cycle.mjs && node scripts/verify-layout.mjs && node scripts/verify-export.mjs",
-    "icons": "node scripts/generate-brand-icons.mjs",
-    "check": "npm run lint && npm run build && npm run typecheck && npm test"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "Premium informational website for Shree Sudhya Laundry Services",
-  "dependencies": {
-    "@react-three/drei": "^10.7.9",
-    "@react-three/fiber": "^9.8.2",
-    "lucide-react": "^1.58.0",
-    "next": "^16.4.2",
-    "react": "^19.3.1",
-    "react-dom": "^19.3.1",
-    "three": "0.182.0"
+    "dev": "npm run dev -w @shree/marketing",
+    "dev:marketing": "npm run dev -w @shree/marketing",
+    "dev:operations": "npm run dev -w @shree/operations",
+    "preview": "npm run preview -w @shree/marketing",
+    "build:marketing": "npm run build -w @shree/marketing",
+    "build:operations": "npm run build -w @shree/operations",
+    "build": "npm run build:marketing && npm run build:operations",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "check": "npm run lint && npm run build && npm run typecheck && npm test",
+    "db:generate": "npm run db:generate -w @shree/operations",
+    "test:integration": "npm run test:integration -w @shree/operations",
+    "format": "prettier --write \"apps/operations/src/**/*.{ts,tsx,css}\" \"apps/operations/scripts/*.ts\" \"apps/operations/tests/**/*.ts\" \"apps/operations/*.ts\" \"packages/domain/{src,tests}/**/*.ts\" \"docs/*.md\""
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
@@ -31,11 +29,16 @@
     "@types/react-dom": "^19.3.0",
     "@types/three": "0.182.0",
     "eslint": "^9.39.5",
+    "prettier": "3.6.2",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.71.2"
   },
-  "private": true,
   "engines": {
     "node": ">=20.19.0"
+  },
+  "overrides": {
+    "@prisma/config": {
+      "deepmerge-ts": "8.0.2"
+    }
   }
 }

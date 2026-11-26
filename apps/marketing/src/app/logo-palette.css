@@ -1,0 +1,135 @@
+/* Sampled artwork anchors: paper #fefefe, royal water blue #068af6,
+   metallic gold #d27e06, and leaf #064e06. Blue and gold tints use the
+   sampled hues mixed with paper, so broad surfaces keep the logo's lightness. */
+:root {
+  --brand-paper: #fefefe;
+  --navy: #202f47;
+  --deep: #284c77;
+  --aqua-bright: #068af6;
+  --aqua: #075f9c;
+  --gold: #d27e06;
+  --gold-light: #f7db9d;
+  --brand-gold-ink: #85500b;
+  --brand-leaf: #246128;
+  --ink: #40546e;
+  --ivory: var(--brand-paper);
+  --pearl-light: var(--brand-paper);
+  --pearl-base: #f2f9ff;
+  --pearl-warm: #fcf4e7;
+  --brand-aqua-mist: #e3f2fe;
+  --brand-border: #c7ddf0;
+  --brand-sheet: linear-gradient(105deg, var(--brand-paper) 42%, #edf7ff 100%);
+  --brand-marble-wash: linear-gradient(115deg, #fefefef5 15%, #f2f9ffee 58%, #e3f2fed9);
+  --brand-action: linear-gradient(112deg, #f3faff, #d2ebff);
+  --brand-action-hover: linear-gradient(112deg, #e5f4ff, #b9dfff);
+  --brand-shadow: 0 12px 30px #202f4712;
+}
+
+html, body {
+  background: var(--brand-paper);
+  color: var(--navy);
+}
+
+.header, .mobile-nav {
+  background: var(--brand-sheet);
+  color: var(--navy);
+}
+
+.hero.marble {
+  background: var(--brand-sheet);
+}
+
+.hero::before {
+  background:
+    radial-gradient(ellipse at 77% 63%, #068af61a, transparent 43%),
+    radial-gradient(320px circle at var(--light-x, 72%) var(--light-y, 45%), #d27e0610, transparent 72%);
+}
+
+.hero-topline, .hero-topline .topline-right, .hero-copy > p,
+.section-intro, .about-copy > p, .journey-panel p, .journey-panel small {
+  color: var(--ink);
+}
+
+.desktop-nav a[aria-current], .desktop-nav a:hover,
+.mobile-nav a[aria-current], .text-link:hover {
+  color: var(--aqua);
+}
+
+.nav-contact, .button.primary {
+  background: var(--brand-action);
+  border-color: #82b7e0;
+  color: var(--navy);
+  box-shadow: 0 7px 20px #202f4714, inset 0 1px #ffffffa0;
+}
+
+.nav-contact:hover, .button.primary:hover {
+  background: var(--brand-action-hover);
+  color: var(--navy);
+}
+
+.hero-copy .fabric-word, .section-top h2 em, .about-copy h2 em, .process-section h2 em {
+  color: var(--aqua);
+}
+
+.fabric-word::after { background: linear-gradient(90deg, var(--aqua-bright), transparent); }
+.gold-star { color: var(--gold); }
+
+.eyebrow, .process-section .eyebrow, .service-tag, .journey-panel .service-tag,
+.gallery-caption small, .availability {
+  color: var(--brand-gold-ink);
+}
+
+.eyebrow > span, .desktop-nav a::after {
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+}
+
+.values-strip {
+  background: linear-gradient(110deg, var(--pearl-warm), var(--pearl-base) 52%, var(--brand-aqua-mist));
+  color: var(--navy);
+  border-color: var(--brand-border);
+}
+
+.values-strip > div { border-color: var(--brand-border); }
+.values-strip strong { color: var(--navy); }
+.values-strip small { color: var(--ink); }
+.values-strip svg { color: var(--aqua); }
+.values-strip > div:nth-child(2) svg { color: var(--brand-leaf); }
+.values-strip > div:nth-child(3) svg { color: var(--brand-gold-ink); }
+.note-icon, .hero-note .note-icon { color: var(--brand-leaf); }
+
+.services-section, .about-section.marble, .gallery-section, footer {
+  background: var(--brand-marble-wash), var(--marble-texture) center / cover;
+}
+
+.process-section {
+  background: linear-gradient(125deg, var(--pearl-base), var(--brand-aqua-mist));
+}
+
+.service-card, .gallery-dialog {
+  background: linear-gradient(150deg, var(--brand-paper), var(--pearl-base));
+  border-color: var(--brand-border);
+  box-shadow: var(--brand-shadow);
+}
+
+.service-card:hover, .service-card:focus-within {
+  background: linear-gradient(150deg, var(--brand-paper), var(--brand-aqua-mist));
+  border-color: #82b7e0;
+}
+
+.service-icon, .journey-tabs button[aria-selected='true'] {
+  color: var(--aqua);
+  background: var(--brand-aqua-mist);
+  border-color: #9bc9ef;
+}
+
+.journey-tabs button, .journey-panel > .round-button {
+  color: var(--deep);
+  border-color: var(--brand-border);
+}
+
+.journey-tabs button[aria-selected='true'] {
+  box-shadow: inset 0 -2px var(--aqua);
+}
+
+.gallery-photo, .footer-bottom { border-color: var(--brand-border); }
+.footer-top > p, .footer-bottom { color: var(--ink); }
